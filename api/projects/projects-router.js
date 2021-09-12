@@ -30,4 +30,33 @@ router.post('/', validateProject, (req, res) => {
         .catch(next);
 });
 
+router.put('/:id', validateProjectId, validateProject, (req, res) => {
+    Project.update(req.params.id, { name: req.name, description: req.description })
+        .then(() => {
+            return Project.update(req.params.id);
+        })
+        .then((projects) => {
+            res.json(projects);
+        })
+        .catch(next);
+});
+
+router.delete('/:id', validateProjectId, async (req, res) => {
+    try {
+        await Project.remove(req.params.id);
+        res.json(req.projects);
+    } catch (err) {
+        next(err);
+    }
+});
+
+router.get('/:id/actions', validateProjectId, async (req, res) => {
+    try {
+        const result = await Project.getProjectActions(req.params.id);
+        res.json(result);
+    } catch (err) {
+        next(err);
+    }
+});
+
 module.exports = router;
